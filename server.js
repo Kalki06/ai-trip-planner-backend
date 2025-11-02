@@ -588,15 +588,24 @@ const PORT = process.env.PORT || 5000;
 // ==========================
 // Middleware
 // ==========================
-app.use(
-  cors({
-    origin: process.env.FRONTEND_URL || '*',
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  })
-);
-app.use(express.json());
+// CORS configuration - MUST be before other middleware
+app.use(cors({
+  origin: [
+    'http://localhost:5173',
+    'http://localhost:3000',
+    'https://ai-trip-planner-frontend-5uywraf4v-kalki06s-projects.vercel.app',
+    'https://ai-trip-planner-frontend-857xp890l-kalki06s-projects.vercel.app',
+    /https:\/\/ai-trip-planner-frontend-.*\.vercel\.app$/, // Allow all Vercel preview URLs
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  exposedHeaders: ['Content-Length', 'X-JSON'],
+  maxAge: 86400 // 24 hours
+}));
+
+// Handle preflight requests
+app.options('*', cors());
 
 // ==========================
 // Basic Routes
